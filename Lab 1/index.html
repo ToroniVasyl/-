@@ -1,38 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Графік</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://d3js.org/d3.v6.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Побудова траєкторії</h1>
+        <div class="controls">
+            <h1>Побудова траєкторії</h1>
 
-        <label for="x0">x0:</label>
-        <input type="number" id="x0" value="0">
+            <label for="x0">x0:</label>
+            <input type="number" id="x0" value="0">
 
-        <label for="y0">y0:</label>
-        <input type="number" id="y0" value="0">
+            <label for="y0">y0:</label>
+            <input type="number" id="y0" value="0">
 
-        <label for="angle">Кут (°):</label>
-        <input type="number" id="angle" value="45">
+            <label for="angle">Кут (°):</label>
+            <input type="number" id="angle" value="45">
 
-        <label for="v0">Швидкість (v0):</label>
-        <input type="number" id="v0" value="50">
+            <label for="v0">Швидкість (v0):</label>
+            <input type="number" id="v0" value="50">
 
-        <label for="acceleration">Прискорення (a):</label>
-        <input type="number" id="acceleration" value="9.81">
+            <label for="acceleration">Прискорення (a):</label>
+            <input type="number" id="acceleration" value="9.81">
 
-        <label for="trajectoryColor">Колір траєкторії:</label>
-        <input type="color" id="trajectoryColor" value="#ff0000">
+            <label for="trajectoryColor">Колір траєкторії:</label>
+            <input type="color" id="trajectoryColor" value="#ff0000">
 
-        <button onclick="drawTrajectory()">Побудувати</button>
-        <button onclick="clearChart()">Очистити</button>
+            <button onclick="drawTrajectory()">Побудувати</button>
+            <button onclick="clearChart()">Очистити</button>
+        </div>
 
-        <div id="chart"></div>
+        <div id="chart-container">
+            <canvas id="chart" width="800" height="400"></canvas>
+        </div>
     </div>
 
     <script src="script.js"></script>
