@@ -1,108 +1,113 @@
 function drawGrid() {
-   const canvas = document.getElementById('canvas');
-   const ctx = canvas.getContext('2d');
-   const gridSize = 50; 
+   const svg = d3.select("#canvas");
+   const width = svg.attr("width");
+   const height = svg.attr("height");
+   const gridSize = 50;
    const metersPerGrid = 50;
-   const labelOffset = 15;
+   const labelOffset = 10;
 
-   ctx.clearRect(0, 0, canvas.width, canvas.height); 
-
-   ctx.strokeStyle = "green";
-   ctx.lineWidth = 0.5;
-
-   const centerX = canvas.width / 2;
-   const centerY = canvas.height / 2;
-
-   ctx.fillStyle = "black";
-   ctx.font = "12px Arial";
+   const centerX = width / 2;
+   const centerY = height / 2;
 
    for (let x = -centerX; x <= centerX; x += gridSize) {
-       ctx.beginPath();
-       ctx.moveTo(centerX + x, 0);
-       ctx.lineTo(centerX + x, canvas.height);
-       ctx.stroke();
+       svg.append("line")
+           .attr("x1", centerX + x)
+           .attr("y1", 0)
+           .attr("x2", centerX + x)
+           .attr("y2", height)
+           .attr("stroke", "green")
+           .attr("stroke-width", 0.5);
 
        if (x !== 0) {
-           let label = `${(x / gridSize * metersPerGrid).toFixed(0)}м`;
-           ctx.fillText(label, centerX + x - labelOffset, centerY + labelOffset);
+           svg.append("text")
+               .attr("x", centerX + x - labelOffset)
+               .attr("y", centerY + labelOffset)
+               .attr("fill", "black")
+               .attr("font-size", "12px")
+               .text(`${(x / gridSize * metersPerGrid).toFixed(0)}м`);
        }
    }
+
    for (let y = -centerY; y <= centerY; y += gridSize) {
-       ctx.beginPath();
-       ctx.moveTo(0, centerY - y);
-       ctx.lineTo(canvas.width, centerY - y);
-       ctx.stroke();
+       svg.append("line")
+           .attr("x1", 0)
+           .attr("y1", centerY - y)
+           .attr("x2", width)
+           .attr("y2", centerY - y)
+           .attr("stroke", "green")
+           .attr("stroke-width", 0.5);
 
        if (y !== 0) {
-           let label = `${(y / gridSize * metersPerGrid).toFixed(0)}м`;
-           ctx.fillText(label, centerX + labelOffset, centerY - y + labelOffset);
+           svg.append("text")
+               .attr("x", centerX + labelOffset)
+               .attr("y", centerY - y + labelOffset)
+               .attr("fill", "black")
+               .attr("font-size", "12px")
+               .text(`${(y / gridSize * metersPerGrid).toFixed(0)}м`);
        }
    }
 
-   ctx.strokeStyle = "black";
-   ctx.lineWidth = 2;
-   ctx.beginPath();
-   ctx.moveTo(centerX, 0);
-   ctx.lineTo(centerX, canvas.height);
-   ctx.stroke();
+   svg.append("line")
+       .attr("x1", centerX)
+       .attr("y1", 0)
+       .attr("x2", centerX)
+       .attr("y2", height)
+       .attr("stroke", "black")
+       .attr("stroke-width", 2);
 
-   ctx.beginPath();
-   ctx.moveTo(0, centerY);
-   ctx.lineTo(canvas.width, centerY);
-   ctx.stroke();
+   svg.append("line")
+       .attr("x1", 0)
+       .attr("y1", centerY)
+       .attr("x2", width)
+       .attr("y2", centerY)
+       .attr("stroke", "black")
+       .attr("stroke-width", 2);
 }
 
-window.onload = function() {
-   drawGrid();
-};
-
 function drawTrajectory() {
-   const canvas = document.getElementById('canvas');
-   const ctx = canvas.getContext('2d');
+   const svg = d3.select("#canvas");
    const x0 = parseFloat(document.getElementById('x0').value);
    const y0 = parseFloat(document.getElementById('y0').value);
    const angle = parseFloat(document.getElementById('angle').value) * Math.PI / 180;
    const velocity = parseFloat(document.getElementById('velocity').value);
    const lineColor = document.getElementById('lineColor').value;
 
-   ctx.strokeStyle = lineColor;
-   ctx.lineWidth = 2;
-   ctx.beginPath();
-   ctx.moveTo(canvas.width / 2 + x0, canvas.height / 2 - y0);
+   const width = svg.attr("width");
+   const height = svg.attr("height");
+   const centerX = width / 2;
+   const centerY = height / 2;
 
    let t = 0, dt = 0.1;
-   let maxHeight = y0;
-   let endPointX = x0, endPointY = y0;
+   let endPointX = 0, endPointY = 0;
+   let trajectoryData = [];
 
    while (true) {
        let x = x0 + velocity * Math.cos(angle) * t;
        let y = y0 + velocity * Math.sin(angle) * t;
-
-       if (y > canvas.height / 2 || x > canvas.width / 2) break;
-
-       ctx.lineTo(canvas.width / 2 + x, canvas.height / 2 - y);
-
-       if (y > maxHeight) maxHeight = y;
-
+       if (x > width || y > height) break;
+       
+       trajectoryData.push([centerX + x, centerY - y]);
+       
        endPointX = x;
        endPointY = y;
-
+       
        t += dt;
    }
-   ctx.stroke();
-   const resultDiv = document.getElementById('results');
-   const newResult = document.createElement('p');
-   newResult.innerText = `Траєкторія: Макс. висота = ${maxHeight.toFixed(2)} м, Кінцева точка = (${endPointX.toFixed(2)}, ${endPointY.toFixed(2)}) м`;
-   newResult.style.color = lineColor;
-   resultDiv.appendChild(newResult);
+
+   svg.append("path")
+       .data([trajectoryData])
+       .attr("fill", "none")
+       .attr("stroke", lineColor)
+       .attr("stroke-width", 2)
+       .attr("d", d3.line());
+
+   document.getElementById('endPoint').innerText = `Кінцева точка: (${endPointX.toFixed(2)}, ${endPointY.toFixed(2)}) м`;
 }
 
 function clearCanvas() {
-   const canvas = document.getElementById('canvas');
-   const ctx = canvas.getContext('2d');
-   ctx.clearRect(0, 0, canvas.width, canvas.height);
-   drawGrid();
-   document.getElementById('results').innerHTML = ""; 
+   const svg = d3.select("#canvas");
+   svg.selectAll("path").remove();
+   document.getElementById('endPoint').innerText = "";
 }
 
 window.onload = function() {

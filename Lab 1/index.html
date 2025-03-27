@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Траєкторія руху</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
   </head>
   <body>
     <div class="container">
@@ -12,7 +13,7 @@
       <div class="controls">
         <label>Початкова координата X: <input type="number" id="x0" value="0"></label>
         <label>Початкова координата Y: <input type="number" id="y0" value="0"></label>
-        <label>Кут(градуси): <input type="number" id="angle" value="45"></label>
+        <label>Кут (градуси): <input type="number" id="angle" value="45"></label>
         <label>Початкова швидкість(V0): <input type="number" id="velocity" value="50"></label>
         <label>Прискорення(a): <input type="number" id="acceleration" value="9.8"></label>
         <label>Колір: <input type="color" id="lineColor" value="#ff0000"></label>
@@ -20,7 +21,7 @@
         <button onclick="clearCanvas()">Очистити</button>
       </div>
       <div class="canvas-container">
-        <canvas id="canvas" width="600" height="400"></canvas>
+        <svg id="canvas" width="600" height="400"></svg>
       </div>
       <div class="results">
         <p id="maxHeight"></p>
