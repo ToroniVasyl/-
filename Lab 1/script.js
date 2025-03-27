@@ -1,66 +1,110 @@
-function drawTrajectory() {
+function drawGrid() {
+   const canvas = document.getElementById('canvas');
+   const ctx = canvas.getContext('2d');
+   const gridSize = 50; 
+   const metersPerGrid = 50;
+   const labelOffset = 15;
 
+   ctx.clearRect(0, 0, canvas.width, canvas.height); 
+
+   ctx.strokeStyle = "green";
+   ctx.lineWidth = 0.5;
+
+   const centerX = canvas.width / 2;
+   const centerY = canvas.height / 2;
+
+   ctx.fillStyle = "black";
+   ctx.font = "12px Arial";
+
+   for (let x = -centerX; x <= centerX; x += gridSize) {
+       ctx.beginPath();
+       ctx.moveTo(centerX + x, 0);
+       ctx.lineTo(centerX + x, canvas.height);
+       ctx.stroke();
+
+       if (x !== 0) {
+           let label = `${(x / gridSize * metersPerGrid).toFixed(0)}м`;
+           ctx.fillText(label, centerX + x - labelOffset, centerY + labelOffset);
+       }
+   }
+   for (let y = -centerY; y <= centerY; y += gridSize) {
+       ctx.beginPath();
+       ctx.moveTo(0, centerY - y);
+       ctx.lineTo(canvas.width, centerY - y);
+       ctx.stroke();
+
+       if (y !== 0) {
+           let label = `${(y / gridSize * metersPerGrid).toFixed(0)}м`;
+           ctx.fillText(label, centerX + labelOffset, centerY - y + labelOffset);
+       }
+   }
+
+   ctx.strokeStyle = "black";
+   ctx.lineWidth = 2;
+   ctx.beginPath();
+   ctx.moveTo(centerX, 0);
+   ctx.lineTo(centerX, canvas.height);
+   ctx.stroke();
+
+   ctx.beginPath();
+   ctx.moveTo(0, centerY);
+   ctx.lineTo(canvas.width, centerY);
+   ctx.stroke();
+}
+
+window.onload = function() {
+   drawGrid();
+};
+
+function drawTrajectory() {
+   const canvas = document.getElementById('canvas');
+   const ctx = canvas.getContext('2d');
    const x0 = parseFloat(document.getElementById('x0').value);
    const y0 = parseFloat(document.getElementById('y0').value);
-   const angleDeg = parseFloat(document.getElementById('angle').value);
-   const v0 = parseFloat(document.getElementById('v0').value);
-   const a = parseFloat(document.getElementById('acceleration').value);
-   const trajectoryColor = document.getElementById('trajectoryColor').value;
-   const angle = angleDeg * Math.PI / 180;
- 
-   const discriminant = Math.pow(v0 * Math.sin(angle), 2) + 2 * a * y0;
-   let tFlight = (v0 * Math.sin(angle) + Math.sqrt(discriminant)) / a;
-   if (tFlight < 0) tFlight = 0;
-   
-   const numPoints = 100;
-   const data = [];
-   for (let i = 0; i <= numPoints; i++) {
-     const t = tFlight * i / numPoints;
-     const x = x0 + v0 * Math.cos(angle) * t;
-     const y = y0 + v0 * Math.sin(angle) * t - 0.5 * a * t * t;
-     data.push({ x, y });
+   const angle = parseFloat(document.getElementById('angle').value) * Math.PI / 180;
+   const velocity = parseFloat(document.getElementById('velocity').value);
+   const lineColor = document.getElementById('lineColor').value;
+
+   ctx.strokeStyle = lineColor;
+   ctx.lineWidth = 2;
+   ctx.beginPath();
+   ctx.moveTo(canvas.width / 2 + x0, canvas.height / 2 - y0);
+
+   let t = 0, dt = 0.1;
+   let maxHeight = y0;
+   let endPointX = x0, endPointY = y0;
+
+   while (true) {
+       let x = x0 + velocity * Math.cos(angle) * t;
+       let y = y0 + velocity * Math.sin(angle) * t;
+
+       if (y > canvas.height / 2 || x > canvas.width / 2) break;
+
+       ctx.lineTo(canvas.width / 2 + x, canvas.height / 2 - y);
+
+       if (y > maxHeight) maxHeight = y;
+
+       endPointX = x;
+       endPointY = y;
+
+       t += dt;
    }
-   
-   const margin = { top: 20, right: 30, bottom: 40, left: 50 },
-         width = 800 - margin.left - margin.right,
-         height = 400 - margin.top - margin.bottom;
-   
-   d3.select("#chart").select("svg").remove();
-   
-   const svg = d3.select("#chart")
-                 .append("svg")
-                 .attr("width", width + margin.left + margin.right)
-                 .attr("height", height + margin.top + margin.bottom)
-                 .append("g")
-                 .attr("transform", `translate(${margin.left},${margin.top})`);
-   
-   const xMax = d3.max(data, d => d.x);
-   const yMax = d3.max(data, d => d.y);
-   
-   const xScale = d3.scaleLinear().domain([0, xMax]).range([0, width]);
-   const yScale = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
- 
-   svg.append("g")
-      .attr("transform", `translate(0, ${height})`)
-      .call(d3.axisBottom(xScale));
-   
-   svg.append("g")
-      .call(d3.axisLeft(yScale));
-   
-   const lineGenerator = d3.line()
-                           .x(d => xScale(d.x))
-                           .y(d => yScale(d.y));
-   
-   svg.append("path")
-      .datum(data)
-      .attr("d", lineGenerator)
-      .attr("fill", "none")
-      .attr("stroke", trajectoryColor)
-      .attr("stroke-width", 2);
-   
-   console.log("Час польоту:", tFlight.toFixed(2), "с");
- }
- 
- function clearChart() {
-   d3.select("#chart").select("svg").remove();
- }
+   ctx.stroke();
+   const resultDiv = document.getElementById('results');
+   const newResult = document.createElement('p');
+   newResult.innerText = `Траєкторія: Макс. висота = ${maxHeight.toFixed(2)} м, Кінцева точка = (${endPointX.toFixed(2)}, ${endPointY.toFixed(2)}) м`;
+   newResult.style.color = lineColor;
+   resultDiv.appendChild(newResult);
+}
+
+function clearCanvas() {
+   const canvas = document.getElementById('canvas');
+   const ctx = canvas.getContext('2d');
+   ctx.clearRect(0, 0, canvas.width, canvas.height);
+   drawGrid();
+   document.getElementById('results').innerHTML = ""; 
+}
+
+window.onload = function() {
+   drawGrid();
+};

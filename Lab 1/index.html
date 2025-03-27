@@ -1,44 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Графік</title>
+    <title>Траєкторія руху</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://d3js.org/d3.v6.min.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="controls">
-            <h1>Побудова траєкторії</h1>
-
-            <label for="x0">x0:</label>
-            <input type="number" id="x0" value="0">
-
-            <label for="y0">y0:</label>
-            <input type="number" id="y0" value="0">
-
-            <label for="angle">Кут (°):</label>
-            <input type="number" id="angle" value="45">
-
-            <label for="v0">Швидкість (v0):</label>
-            <input type="number" id="v0" value="50">
-
-            <label for="acceleration">Прискорення (a):</label>
-            <input type="number" id="acceleration" value="9.81">
-
-            <label for="trajectoryColor">Колір траєкторії:</label>
-            <input type="color" id="trajectoryColor" value="#ff0000">
-
-            <button onclick="drawTrajectory()">Побудувати</button>
-            <button onclick="clearChart()">Очистити</button>
-        </div>
-
-        <div id="chart-container">
-            <svg id="chart" width="600" height="400"></svg>
-        </div>
+      <h1>Візуалізація траєкторії руху</h1>
+      <div class="controls">
+        <label>Початкова координата X: <input type="number" id="x0" value="0"></label>
+        <label>Початкова координата Y: <input type="number" id="y0" value="0"></label>
+        <label>Кут(градуси): <input type="number" id="angle" value="45"></label>
+        <label>Початкова швидкість(V0): <input type="number" id="velocity" value="50"></label>
+        <label>Прискорення(a): <input type="number" id="acceleration" value="9.8"></label>
+        <label>Колір: <input type="color" id="lineColor" value="#ff0000"></label>
+        <button onclick="drawTrajectory()">Побудувати</button>
+        <button onclick="clearCanvas()">Очистити</button>
+      </div>
+      <div class="canvas-container">
+        <canvas id="canvas" width="600" height="400"></canvas>
+      </div>
+      <div class="results">
+        <p id="maxHeight"></p>
+        <p id="endPoint"></p>
+      </div>
     </div>
-
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
