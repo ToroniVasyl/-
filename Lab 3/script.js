@@ -24,7 +24,7 @@ function initTable() {
     for (let w = 0; w <= capacity; w++) {
       const cell = row.insertCell();
       cell.innerText = "0";
-      cell.id = `cell-${i}-${w}`;
+      cell.id = `cell-${i}-${w}`; 
     }
   }
 
@@ -35,10 +35,10 @@ function initTable() {
 async function fillDPWithAnimation() {
   for (let i = 1; i <= n; i++) {
     for (let w = 0; w <= capacity; w++) {
-      const currentCell = document.getElementById(`cell-${i}-${w}`);
+      const currentCell = document.getElementById(`cell-${i}-${w}`); 
       currentCell.classList.add("highlight");
 
-      await new Promise(resolve => setTimeout(resolve, 50)); // пауза
+      await new Promise(resolve => setTimeout(resolve, 50)); 
 
       if (weights[i - 1] <= w) {
         dp[i][w] = Math.max(
@@ -51,7 +51,6 @@ async function fillDPWithAnimation() {
 
       currentCell.innerText = dp[i][w];
 
-      // Зняти підсвітку
       setTimeout(() => currentCell.classList.remove("highlight"), 150);
     }
   }
@@ -64,8 +63,8 @@ function getSelectedItems() {
 
   for (let i = n; i > 0; i--) {
     if (dp[i][w] !== dp[i - 1][w]) {
-      selected.push(i - 1); // предмет i взятий
-      const cell = document.getElementById(`cell-${i}-${w}`);
+      selected.push(i - 1); 
+      const cell = document.getElementById(`cell-${i}-${w}`); 
       if (cell) cell.classList.add("chosen");
       w -= weights[i - 1];
     }
@@ -77,11 +76,11 @@ function getSelectedItems() {
 // Виведення результату
 function showResults() {
   const maxValue = dp[n][capacity];
-  document.getElementById("result").innerHTML = `<h3>Максимальна цінність: ${maxValue}</h3>`;
+  document.getElementById("result").innerHTML = `<h3>Максимальна цінність: ${maxValue}</h3>`; 
 
   const selected = getSelectedItems();
-  const list = selected.map(i => `Предмет ${i + 1} (вага: ${weights[i]}, цінність: ${values[i]})`).join("<br>");
-  document.getElementById("selected-items").innerHTML = `<h3>Вибрані предмети:</h3><p>${list}</p>`;
+  const list = selected.map(i => `Предмет ${i + 1} (вага: ${weights[i]}, цінність: ${values[i]})`).join("<br>"); 
+  document.getElementById("selected-items").innerHTML = `<h3>Вибрані предмети:</h3><p>${list}</p>`; 
 }
 
 // === Запуск ===
